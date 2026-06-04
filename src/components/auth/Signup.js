@@ -1,0 +1,145 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { signInWithPopup, signOut } from "firebase/auth";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { Briefcase, Home, Loader2 } from "lucide-react";
+import { auth, googleProvider, db } from "@/lib/firebase";
+
+/* ---------- Google Logo ---------- */
+const GoogleLogo = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24">
+    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22z"/>
+    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+  </svg>
+);
+
+/* ---------- Floating Card ---------- */
+function Card({ children }) {
+  return (
+    <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_40px_90px_rgba(0,0,0,0.18)] p-6 sm:p-8">
+      {children}
+    </div>
+  );
+}
+
+export default function Signup() {
+  const router = useRouter();
+  const [role, setRole] = useState(null); // "worker" | "customer"
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleGoogleSignup = async () => {
+    if (!role) {
+      setError("Please select a role");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await signInWithPopup(auth, googleProvider);
+      const user = res.user;
+
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+
+      if (snap.exists()) {
+        // User already registered
+        setError("Account already exists. Please login.");
+        await signOut(auth);
+        setLoading(false);
+        return;
+      }
+
+      await setDoc(userRef, {
+        uid: user.uid,
+        role, // 🔒 LOCKED HERE
+        authProvider: "google",
+        email: user.email,
+        phone: null,
+        name: user.displayName || "",
+        language: "hi",
+        onboardingCompleted: false,
+        createdAt: serverTimestamp(),
+      });
+
+      router.replace("/onboarding");
+    } catch (err) {
+      console.error(err);
+      setError("Signup failed. Try again.");
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-emerald-100 to-emerald-50 px-4">
+      <Card>
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <Image
+            src="/logo/s1.png"
+            alt="ShramSaathi"
+            width={200}
+            height={64}
+            priority
+          />
+        </div>
+
+        {/* Title */}
+        <h2 className="text-center text-lg font-semibold text-gray-800 mb-6">
+          Create your account
+        </h2>
+
+        {/* Role Selection */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <button
+            onClick={() => setRole("worker")}
+            className={`p-5 rounded-2xl border transition-all ${
+              role === "worker"
+                ? "border-orange-400 bg-orange-50 shadow-md"
+                : "border-gray-300"
+            }`}
+          >
+            <Briefcase className="mx-auto mb-2 text-orange-600" />
+            <div className="font-semibold text-gray-800">Worker</div>
+            <div className="text-sm text-gray-500">Find daily work</div>
+          </button>
+
+          <button
+            onClick={() => setRole("customer")}
+            className={`p-5 rounded-2xl border transition-all ${
+              role === "customer"
+                ? "border-emerald-400 bg-emerald-50 shadow-md"
+                : "border-gray-300"
+            }`}
+          >
+            <Home className="mx-auto mb-2 text-emerald-600" />
+            <div className="font-semibold text-gray-800">Customer</div>
+            <div className="text-sm text-gray-500">Hire workers</div>
+          </button>
+        </div>
+
+        {/* Google Signup */}
+        <button
+          onClick={handleGoogleSignup}
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-3 rounded-full py-4 border bg-slate-50 text-base font-semibold hover:shadow-md transition"
+        >
+          {loading ? <Loader2 className="animate-spin" /> : <GoogleLogo />}
+          Continue with Google
+        </button>
+
+        {/* Error */}
+        {error && (
+          <p className="text-center text-sm text-red-500 mt-4">{error}</p>
+        )}
+      </Card>
+    </div>
+  );
+}

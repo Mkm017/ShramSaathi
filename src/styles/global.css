@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: #f8fafc; /* Slate-50 */
+}
+
+/* Hide scrollbar for clean UI on mobile */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
