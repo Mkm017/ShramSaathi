@@ -1,40 +1,37 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ShramSaathi
 
-## Getting Started
+ShramSaathi is a Next.js web application that connects customers with local workers and provides job posting, job feeds, and worker progress tracking.
 
-First, run the development server:
+## Features
+- Customer and worker dashboards
+- Job posting and job feed for workers
+- QR generator for jobs
+- Firebase integration for auth and data
+- PWA support via `next-pwa`
+
+## Prerequisites
+- Node.js 18+ (recommended)
+- npm (or yarn / pnpm)
+
+## Install
+Clone the repo, install dependencies, and start the dev server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Available scripts (from `package.json`):
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- `npm run dev` — start development server
+- `npm run build` — build production assets
+- `npm run start` — start production server after build
+- `npm run lint` — run ESLint
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment
+Create a `.env.local` in the project root to add any required environment variables. This project uses Firebase; set your Firebase config values as `NEXT_PUBLIC_...` variables matching the keys used in `src/lib/firebase.js`.
 
-## Learn More
+## Notes about this repository
+- The repo uses `next` 14 and `firebase` for backend services.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-=======
-# ShramSaathi
->>>>>>> 432ac7bdc72b86d3d716b85fcd6d5dcb75c1794d
